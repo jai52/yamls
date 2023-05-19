@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ample.applications.depl
+  labels:
+    app: ample.applications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ample.applications
+  template:
+    metadata:
+      labels:
+        app: ample.applications
+    spec:
+      containers:
+      - name: ample-applications-web
+        image: ample.azurecr.io/ample.applications.web:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      imagePullSecrets:
+        - name: ampledockerhub
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ample-applications-service
+spec:
+  selector:
+    app: ample.applications
+  ports:
+  - port: 8083
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ample-applications-ingress
+  labels:
+    name: ample-applications-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: al.applications.api.cloud.amplelogic.com
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: ample-applications-service
+              port: 
+                number: 8083
+

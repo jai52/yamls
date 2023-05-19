@@ -1,0 +1,9 @@
+{
+    "Authentication":"http://{CLIENT}.auth.api.cloud.amplelogic.com/",
+    "Applications":"http://{CLIENT}.applications.api.cloud.amplelogic.com/",
+    "Designer":"http://{CLIENT}.desinger.api.cloud.amplelogic.com/",
+    "Analytics":"http://{CLIENT}.analytics.api.cloud.amplelogic.com/",
+    "Admin":"http://{CLIENT}.admin.api.cloud.amplelogic.com/",
+    "Compiler":"http://{CLIENT}.compiler.api.cloud.amplelogic.com/",
+    "Runner":"http://{CLIENT}.runner.api.cloud.amplelogic.com/"
+}

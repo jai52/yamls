@@ -1,0 +1,61 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ample-ingress
+  labels:
+    name: ample-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: al.cloud.amplelogic.com
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: ample-client-service
+              port: 
+                number: 8081
+    - host: al.auth.api.cloud.amplelogic.com
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: ample-auth-service
+              port: 
+                number: 8082
+    # - host: al.application-api.cloud.amplelogic.com
+    #   http:
+    #     paths:
+    #     - pathType: Prefix
+    #       path: "/"
+    #       backend:
+    #         service:
+    #           name: ample-applications-service
+    #           port: 
+    #             number: 8083
+    # - host: al.admin-api.cloud.amplelogic.com
+    #   http:
+    #     paths:
+    #     - pathType: Prefix
+    #       path: "/"
+    #       backend:
+    #         service:
+    #           name: ample-client-service
+    #           port: 
+    #             number: 8084
+    # - host: al.analytics.api.cloud.amplelogic.com
+    #   http:
+    #     paths:
+    #     - pathType: Prefix
+    #       path: "/"
+    #       backend:
+    #         service:
+    #           name: ample-client-service
+    #           port: 
+    #             number: 8085

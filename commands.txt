@@ -1,0 +1,62 @@
+doskey k=kubectl $* --> alias for kubectl in windows
+alias k=kubectl     --> alias for kubectl in linux
+kubectl exec --stdin --tty ample.auth.depl-5ff45b5cc9-xd59n -n ingress-basic -- /bin/bash  --> exec
+
+
+
+--------------------------------------------------------------------------------------------------------------------
+####################################################################################################################
+######################  ++++++++  ++++        ++  ++++++++++++++  +++++++++   ######################################
+######################     ++     ++  ++      ++  ++              ++     ++   ######################################
+######################     ++     ++    ++    ++  ++     +++++++  +++++++++   ######################################
+######################     ++     ++      ++  ++  ++     ++   ++  ++  ++      ######################################
+######################  ++++++++  ++        ++++  +++++++++   ++  ++    ++    ######################################
+####################################################################################################################
+--------------------------------------------------------------------------------------------------------------------
+NAMESPACE=ingress-basic
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+## With namespace
+helm install ingress-nginx ingress-nginx/ingress-nginx --create-namespace --namespace default --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+##Without namespace
+helm install ingress-nginx ingress-nginx/ingress-nginx --create-namespace --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+--------------------------------------------------------------------------------------------------------------
+
+## Setup Permissions for DNS Zone
+
+tenantId='467e8a63-094c-441a-92ff-03fe55ad4e42';
+subscriptionId='e7417476-43c1-4a0b-a46f-8e9bfc64a90f'
+
+# User Client Id
+az aks show --name ampleaks --resource-group AmpleAKS --query identityProfile.kubeletidentity.clientId -o tsv
+
+#The above command will return the ClientId at
+Virtual Machine Scale Sets > Identity > User Managed Idenetity > AKS Agent pool > ClientId 
+'d2b1ca24-6956-4887-8242-20d5f3936b49'
+
+
+#DNS Id
+az network dns zone show --name cloud.amplelogic.com --resource-group AmpleAKS --query id -o tsv
+
+/subscriptions/e7417476-43c1-4a0b-a46f-8e9bfc64a90f/resourceGroups/ampleaks/providers/Microsoft.Network/dnszones/cloud.amplelogic.com
+
+# Assign Role (DNS Contributor)
+az role assignment create --assignee d2b1ca24-6956-4887-8242-20d5f3936b49 --role 'DNS Zone Contributor' --scope /subscriptions/e7417476-43c1-4a0b-a46f-8e9bfc64a90f/resourceGroups/ampleaks/providers/Microsoft.Network/dnszones/cloud.amplelogic.com
+
+
+# Helm to install External-DNS 
+
+# Add the Helm repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+
+# Use Helm to deploy an External DNS
+# With Namespace
+helm install external-dns bitnami/external-dns --namespace ingress-basic --set provider=azure --set txtOwnerId=aksdemocluster --set policy=sync --set azure.resourceGroup=aksdemocluster-rg --set azure.tenantId=$tenantid --set azure.subscriptionId=$subscriptionid --set azure.useManagedIdentityExtension=true --set azure.userAssignedIdentityID=$UserClientId
+
+# Without Namespace
+helm install external-dns bitnami/external-dns --set provider=azure --set txtOwnerId=ampleaks --set policy=sync --set azure.resourceGroup=AmpleAKS --set azure.tenantId=467e8a63-094c-441a-92ff-03fe55ad4e42 --set azure.subscriptionId=e7417476-43c1-4a0b-a46f-8e9bfc64a90f --set azure.useManagedIdentityExtension=true --set azure.userAssignedIdentityID=d2b1ca24-6956-4887-8242-20d5f3936b49

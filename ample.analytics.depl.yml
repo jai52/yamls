@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ample.analytics.depl
+  labels:
+    app: ample.analytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ample.analytics
+  template:
+    metadata:
+      labels:
+        app: ample.analytics
+    spec:
+      containers:
+      - name: ample-analytics-web
+        image: ample.azurecr.io/ample.analytics.web:latest
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+      imagePullSecrets:
+        - name: ampledockerhub
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ample-analytics-service
+spec:
+  selector:
+    app: ample.analytics
+  ports:
+  - port: 8085
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ample-analytics-ingress
+  labels:
+    name: ample-analytics-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: al.analytics.api.cloud.amplelogic.com
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: ample-analytics-service
+              port: 
+                number: 8085

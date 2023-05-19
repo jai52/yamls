@@ -1,0 +1,32 @@
+{
+    "dbDetails": {
+        "providerType": "NPGSQL",
+        "server": "192.168.1.10",
+        "userName": "postgres",
+        "password": "Welcome2$",
+        "dbName": "al_Admin",
+        "isIntegratedSecurity": false,
+        "portNo": "5555"
+    },
+    "userDetails": {
+        "entityId": "00000000-0000-0000-0000-000000000000",
+        "isActive": true,
+        "isLocked": false,
+        "resetPassword": false,
+        "isNew": false,
+        "isADUser": false,
+        "isUser": false,
+        "resetPasswordOptions": 0,
+        "supervisorName": "",
+        "profilePicture": "",
+        "justification": "",
+        "userName": "sandy",
+        "password": "sandy",
+        "cnFpassword": "red",
+        "fullName": "Sandy",
+        "employeeId": "Sandy"
+    },
+    "orgDetails": {
+        "displayName": "al"
+    }
+}
