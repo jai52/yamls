@@ -17,6 +17,11 @@ spec:
       containers:
       - name: ample-designer-web
         image: ample.azurecr.io/ample.designer.web:latest
+          command: ["sed"]
+          args:
+            - -ie
+            - s/"EnvType": .*"/"EnvType": '\"sql\"'/g
+            - /app/appsettings.json
         resources:
           requests:
             memory: "64Mi"
