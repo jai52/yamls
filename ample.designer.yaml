@@ -17,11 +17,15 @@ spec:
       containers:
       - name: ample-designer-web
         image: ample.azurecr.io/ample.designer.web:latest
-        command: ["sed"]
+      initContainers:
+      - name: setup
+        image: busybox
+        command: ["/bin/sh", "-c"]
         args:
-          - -ie
-          - s/"EnvType": .*"/"EnvType": '\"sql\"'/g
-          - /app/appsettings.json
+        - echo "Running setup script..."
+        - echo "Executing your-shell-file.sh"
+        - chmod +x /app/env.sh
+        - ./app/env.sh SQL
         resources:
           requests:
             memory: "64Mi"
